@@ -2,94 +2,118 @@
 ![pulse](https://github.com/user-attachments/assets/197c7842-c66f-415f-b1d2-5c4539ee2fa7)
 
 
-# Pulse
-A multi-function command-line tool for network reconnaissance and security scanning, written in Python.
+`pulse.py` bundles TCP/UDP port scanning, web enumeration, sub-domain discovery, and offline vulnerability fingerprinting into a single Python script, with both interactive and fully scriptable CLI modes. :contentReference[oaicite:0]{index=0}
 
+---
 
-## Features                                                                                                                                                                                                  │
- │     20                                                                                                                                                                                                              │
- │     21 - **Dual-Mode Operation**: Run with command-line arguments for scripting or without arguments for a user-friendly interactive menu.                                                                          │
- │     22 - **TCP Port Scanning**: Fast, multi-threaded TCP scanner to find open ports and grab service banners.                                                                                                       │
- │     23 - **UDP Port Scanning**: Scan for common UDP ports (requires `sudo`).                                                                                                                                        │
- │     24 - **Subdomain Enumeration**: Discover subdomains for a target domain using a wordlist.                                                                                                                       │
- │     25 - **Web Content Enumeration**: Find hidden directories and files on web servers.                                                                                                                             │
- │     26 - **Vulnerability Scanning**: Cross-references discovered services with a local database of known vulnerabilities.                                                                                           │
- │     27 - **Colorized Output**: Clean, color-coded output for improved readability.                                                                                                                                  │
- │     28 - **JSON Output**: Save scan results to a JSON file for analysis or use in other tools.                                                                                                                      │
- │     29                                                                                                                                                                                                              │
- │     30 ---                                                                                                                                                                                                          │
- │     31                                                                                                                                                                                                              │
- │     32 ## Setup                                                                                                                                                                                                     │
- │     33                                                                                                                                                                                                              │
- │     34 To run Pulse, you need the following files in the same directory:                                                                                                                                            │
- │     35                                                                                                                                                                                                              │
- │     36 1.  `pulse.py`: The main script.                                                                                                                                                                             │
- │     37 2.  `default-wordlist.txt`: Wordlist for web content enumeration.                                                                                                                                            │
- │     38 3.  `subdomain-wordlist.txt`: Wordlist for subdomain enumeration.                                                                                                                                            │
- │     39 4.  `vulns.json`: The local vulnerability database.                                                                                                                                                          │
- │     40                                                                                                                                                                                                              │
- │     41 Make the script executable:                                                                                                                                                                                  │
- │     42 ```bash                                                                                                                                                                                                      │
- │     43 chmod +x pulse.py                                                                                                                                                                                            │
- │     44 ```                                                                                                                                                                                                          │
- │     45                                                                                                                                                                                                              │
- │     46 ---                                                                                                                                                                                                          │
- │     47                                                                                                                                                                                                              │
- │     48 ## Usage                                                                                                                                                                                                     │
- │     49                                                                                                                                                                                                              │
- │     50 The tool can be run in two ways:                                                                                                                                                                             │
- │     51                                                                                                                                                                                                              │
- │     52 ### 1. Interactive Mode                                                                                                                                                                                      │
- │     53                                                                                                                                                                                                              │
- │     54 For a guided experience, run the script without any arguments. This is ideal for new users.                                                                                                                  │
- │     55                                                                                                                                                                                                              │
- │     56 ```bash                                                                                                                                                                                                      │
- │     57 python3 pulse.py                                                                                                                                                                                             │
- │     58 ```                                                                                                                                                                                                          │
- │     59                                                                                                                                                                                                              │
- │     60 The script will launch a menu that walks you through selecting a scan type and the required options.                                                                                                         │
- │     61                                                                                                                                                                                                              │
- │     62 ### 2. Command-Line Mode                                                                                                                                                                                     │
- │     63                                                                                                                                                                                                              │
- │     64 For scripting and automation, you can pass arguments directly.                                                                                                                                               │
- │     65                                                                                                                                                                                                              │
- │     66 **View Help Menu**                                                                                                                                                                                           │
- │     67 ```bash                                                                                                                                                                                                      │
- │     68 python3 pulse.py --help                                                                                                                                                                                      │
- │     69 ```                                                                                                                                                                                                          │
- │     70                                                                                                                                                                                                              │
- │     71 **TCP Port Scan (Default)**                                                                                                                                                                                  │
- │     72 ```bash                                                                                                                                                                                                      │
- │     73 # Scan the 1024 most common ports                                                                                                                                                                            │
- │     74 python3 pulse.py scanme.nmap.org                                                                                                                                                                             │
- │     75                                                                                                                                                                                                              │
- │     76 # Scan a specific port range and save the output                                                                                                                                                             │
- │     77 python3 pulse.py 192.168.1.1 -p 20-80,443 -o results.json                                                                                                                                                    │
- │     78 ```                                                                                                                                                                                                          │
- │     79                                                                                                                                                                                                              │
- │     80 **Full Scan (TCP + Web Enum + Vuln Scan)**                                                                                                                                                                   │
- │     81 ```bash                                                                                                                                                                                                      │
- │     82 python3 pulse.py example.com -p 22,80,443 --web-enum --vuln-scan                                                                                                                                             │
- │     83 ```                                                                                                                                                                                                          │
- │     84                                                                                                                                                                                                              │
- │     85 **UDP Scan**                                                                                                                                                                                                 │
- │     86 *Note: Requires sudo privileges.*                                                                                                                                                                            │
- │     87 ```bash                                                                                                                                                                                                      │
- │     88 sudo python3 pulse.py example.com --mode portscan --udp -p 53,123,161                                                                                                                                        │
- │     89 ```                                                                                                                                                                                                          │
- │     90                                                                                                                                                                                                              │
- │     91 **Subdomain Enumeration**                                                                                                                                                                                    │
- │     92 ```bash                                                                                                                                                                                                      │
- │     93 # Use the default wordlist (subdomain-wordlist.txt)                                                                                                                                                          │
- │     94 python3 pulse.py example.com --mode subdomain                                                                                                                                                                │
- │     95                                                                                                                                                                                                              │
- │     96 # Use a custom wordlist                                                                                                                                                                                      │
- │     97 python3 pulse.py example.com --mode subdomain --wordlist /path/to/your/subs.txt                                                                                                                              │
- │     98 ```                                                                                                                                                                                                          │
- │     99                                                                                                                                                                                                              │
- │    100 ---                                                                                                                                                                                                          │
- │    101                                                                                                                                                                                                              │
- │    102 ## Disclaimer                                                                                                                                                                                                │
- │    103                                                                                                                                                                                                              │
- │    104 This tool is intended for educational purposes and for use by security professionals on authorized systems only. Unauthorized scanning of networks is illegal. The developer assumes no liability            │
- │        and is not responsible for any misuse or damage caused by this program.   
+## ✨ Features
+| Module | Highlights |
+|--------|------------|
+| **Port Scanner** | • Multithreaded TCP scan with banner grabbing<br>• Optional UDP scan (ICMP listener, sudo needed) :contentReference[oaicite:1]{index=1} |
+| **Web Enumerator** | • Crawls discovered HTTP/HTTPS ports with a custom wordlist<br>• Detects 200/301/302/401/403/204/307 responses and prints live URLs :contentReference[oaicite:2]{index=2} |
+| **Sub-domain Finder** | • Brute-force mode using any wordlist you provide |
+| **Vuln Scanner** | • Looks up banners against a local `vulns.json` database (no API keys!) and flags matching CVEs :contentReference[oaicite:3]{index=3} |
+| **Output & UX** | • Colourised console, JSON report writer, interactive menu, and graceful error handling |
+
+---
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/<your-user>/pulse.git
+cd pulse
+# Optional: create an isolated env
+python3 -m venv venv && source venv/bin/activate
+# No external deps required; install colour support on Windows if you like:
+pip install colorama
+
+1. Fully Interactive
+
+python3 pulse.py
+
+2. CLI Power-User Examples
+Goal	Command
+Fast TCP scan 1-1000 + web enum + vuln scan	python3 pulse.py example.com --mode portscan --port-range 1-1000 --web-enum --vuln-scan --output results.json
+UDP scan (53 & 500-510) requires sudo	sudo python3 pulse.py example.com --mode portscan --udp --port-range 53,500-510
+Sub-domain brute force	python3 pulse.py example.com --mode subdomain --wordlist wordlists/subdomains.txt --output subs.json
+⚙️ CLI Reference
+
+usage: pulse.py target [options]
+
+Positional:
+  target                    Domain or IP to scan
+
+Modes:
+  --mode {portscan,subdomain}  (default: interactive menu)
+
+Port/Protocol:
+  --udp                       Perform UDP (not TCP) scan
+  --port-range 1-1024         Comma-separated list and/or ranges (e.g. 22,80,443,8000-8100)
+
+Web Enu​m:
+  --web-enum                  Probe found HTTP[S] services with a wordlist
+  --wordlist <file>           Path to wordlist (default: *default-wordlist.txt*)
+
+Vulnerability:
+  --vuln-scan                 Match banners against local *vulns.json*
+
+Output:
+  --output <file>             Save a JSON report
+
+Misc:
+  -h, --help                  Show full help
+
+📄 JSON Report Format
+
+{
+  "target": "example.com",
+  "mode": "portscan",
+  "start_time": "2025-07-09 11:42:03",
+  "end_time": "...",
+  "open_tcp_ports": [
+    { "port": 22,  "service": "OpenSSH 8.9p1 Ubuntu 3ubuntu0.13" },
+    { "port": 443, "service": "nginx 1.24.0" }
+  ],
+  "web_enumeration": {
+    "443": [{ "path": "/", "status": 200 }, { "path": "/admin", "status": 403 }]
+  },
+  "vulnerabilities": [
+    {
+      "port": 443,
+      "service_name": "nginx",
+      "detected_version": "1.24.0",
+      "vulnerability": { "cve": "CVE-2024-12345", "description": "…" }
+    }
+  ]
+}
+
+📝 Wordlists & vulns.json
+
+    default-wordlist.txt – small content brute-force list
+
+    subdomain-wordlist.txt – starter list of common sub-domains
+
+    vulns.json – map service → affected versions → CVE metadata (extend it as you wish).
+
+🤝 Contributing
+
+    Fork the repo & create a feature branch.
+
+    Code with PEP 8 in mind; keep external dependencies minimal.
+
+    Open a pull request with a clear description & demo output.
+
+📜 License
+
+MIT © 2025 NeoDay – use at your own risk and only on targets you have permission to test.
+🛣️ Roadmap
+
+    Live progress bar & ETA
+
+    ICMP rate-limit detection for UDP mode
+
+    Import Nmap XML as a seed / merge scan
+
+    Dark-theme HTML report
+
+Pulse keeps your assessments beating strong – happy hacking!
